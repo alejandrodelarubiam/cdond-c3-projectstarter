@@ -147,7 +147,8 @@ jobs:
           event: fail
           template: basic_fail_1
   deploy-infrastructure:
-    docker: amazon/aws-cli
+    docker: 
+      - image: amazon/aws-cli
     steps:
       - checkout
       - run: yum install -y tar gzip
