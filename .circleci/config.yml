@@ -202,9 +202,9 @@ jobs:
             apt-get install -y tar gzip
             
             # Install ansible
-            apt-add-repository ppa:ansible/ansible
-            apt-get update
-            apt-get install -y ansible
+            apt-get update -y
+            apt install ansible -y
+            which ansible
             
             # Install awscli
             apt-get install -y python-pip
