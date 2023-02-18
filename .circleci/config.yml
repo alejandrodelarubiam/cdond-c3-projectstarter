@@ -207,8 +207,8 @@ jobs:
             which ansible
             
             # Install awscli
-            apt-get install -y python-pip
-            pip install awscli
+            apt-get install -y python3-pip
+            pip3 install awscli
       - run:
           name: Configure server
           command: |
