@@ -192,6 +192,11 @@ jobs:
       - run:
           name: Install dependencies
           command: |
+            
+            # Install software-properties-common
+            apt-get update
+            apt-get install -y software-properties-common
+
             # Install tar and gzip
             apt-get update
             apt-get install -y tar gzip
