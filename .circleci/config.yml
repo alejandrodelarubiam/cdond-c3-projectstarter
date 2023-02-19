@@ -189,7 +189,7 @@ jobs:
       - add_ssh_keys:
           fingerprints: ["1e:3e:56:c7:80:7f:35:68:2a:e7:26:8d:95:1a:db:89"]    
       - attach_workspace:
-          at: ~/
+          at: .circleci/ansible/
       - run:
           name: Install dependencies
           command: |
@@ -213,7 +213,7 @@ jobs:
       - run:
           name: Configure server
           command: |
-            ansible-playbook -i .circleci/ansible/inventory.txt .circleci/ansible/configure-server.yml
+            ansible-playbook -i inventory.txt configure-server.yml
       - destroy-environment
 
 #   run-migrations:/home/Udacity_Ansible/cdond-c3-projectstarter/.circleci/ansible/configure-server.yml
