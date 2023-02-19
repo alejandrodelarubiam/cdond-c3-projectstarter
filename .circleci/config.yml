@@ -178,7 +178,7 @@ jobs:
       - persist_to_workspace:
           root: ~/
           paths:
-            - .circleci/ansible/inventory.txt
+            - inventory.txt
       - destroy-environment
 
   configure-infrastructure:
@@ -213,7 +213,7 @@ jobs:
       - run:
           name: Configure server
           command: |
-            ansible-playbook -i cdond-c3-projectstarter/.circleci/ansible/inventory.txt cdond-c3-projectstarter/.circleci/ansible/configure-server.yml
+            ansible-playbook -i inventory.txt .circleci/ansible/configure-server.yml
       - destroy-environment
 
 #   run-migrations:/home/Udacity_Ansible/cdond-c3-projectstarter/.circleci/ansible/configure-server.yml
