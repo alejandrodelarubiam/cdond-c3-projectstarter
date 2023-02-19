@@ -178,7 +178,7 @@ jobs:
             cd /root
             ls -a
       - persist_to_workspace:
-          root: ~/
+          root: "$(pwd)"
           paths:
             - .circleci/ansible/inventory.txt
           command: |
