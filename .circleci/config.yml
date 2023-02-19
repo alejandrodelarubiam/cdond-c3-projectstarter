@@ -171,13 +171,14 @@ jobs:
       - run:
           name: Add back-end ip to ansible inventory
           command: |
+            ls -a
             INSTANCE_ID=$(aws ec2 describe-instances --filters "Name=tag:aws:cloudformation:stack-name,Values=udapeople-backend-${CIRCLE_WORKFLOW_ID:0:7}" --query "Reservations[].Instances[].InstanceId" --output text)
             PUBLIC_IP=$(aws ec2 describe-instances --instance-ids $INSTANCE_ID --query 'Reservations[*].Instances[*].PublicIpAddress' --output text)
-            echo "my_instance ansible_host=$PUBLIC_IP" >> cdond-c3-projectstarter/.circleci/ansible/inventory.txt
+            echo "my_instance ansible_host=$PUBLIC_IP" >> .circleci/ansible/inventory.txt
       - persist_to_workspace:
           root: ~/
           paths:
-            - cdond-c3-projectstarter/.circleci/ansible/inventory.txt
+            - .circleci/ansible/inventory.txt
       - destroy-environment
 
   configure-infrastructure:
