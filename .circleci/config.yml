@@ -259,12 +259,12 @@ jobs:
             # Install awscli
             apt-get install -y python3-pip
 
-            # Install Nodejs & Npm
-            apt-get update
-            apt-get install -y curl gnupg2
-            curl -sL https://deb.nodesource.com/setup_14.x | bash -
+            # Install Nodejs
+            apt-get update -y
             apt-get install -y nodejs
-            ln -s /usr/bin/nodejs /usr/local/bin/node
+
+            # Install Npm
+            apt-get update -y
             apt-get install -y npm  
       - run:
           name: Get backend url
