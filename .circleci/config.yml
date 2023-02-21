@@ -241,19 +241,29 @@ jobs:
 
   deploy-frontend:
     docker:
-        - image: amazon/aws-cli
+        - image: python:3.9.16
     steps:
       - checkout 
       - run:
-          name: Install dependencies
+          name: Install dependencies (Ansible, Node, Npm, AWS CLI)
           command: |
-            yum update -y
-            yum install -y epel-release
-            yum install -y ansible
-            curl -sL https://rpm.nodesource.com/setup_14.x | bash -
-            yum install -y nodejs
-            yum install -y npm
-            npm install -g aws-cli    
+            # Install software-properties-common
+            apt-get update
+            apt-get install -y software-properties-common
+            
+            # Install ansible
+            apt-get update -y
+            apt install ansible -y
+            which ansible
+            
+            # Install awscli
+            apt-get install -y python3-pip
+
+            # Install Nodejs & Npm
+            apt-get update
+            apt-get install -y curl gnupg2
+            curl -sL https://deb.nodesource.com/setup_14.x | bash -
+            apt-get install -y nodejs npm   
       - run:
           name: Get backend url
           command: |
