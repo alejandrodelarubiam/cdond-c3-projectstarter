@@ -25,7 +25,6 @@ commands:
           command: |
             # Curl command here to see if there was a successful migration associated with the workflow id, store result in SUCCESS variable
             SUCCESS=$(curl --silent --insecure https://kvdb.io/iqTXRVMkwJTzP3pVxiCak/migration_${CIRCLE_WORKFLOW_ID:0:7})
-            SUCCESS = 1
             if(( $SUCCESS==1 )); 
             then
                cd ~/project/backend
@@ -248,12 +247,12 @@ jobs:
       - run:
           name: Install dependencies
           command: |
-            sudo apt-get update && sudo apt-get install -y \
+            apt-get update && sudo apt-get install -y \
             python \
             ansible \
             nodejs \
             npm \
-            && sudo npm install -g aws-cli      
+            && npm install -g aws-cli      
       - run:
           name: Get backend url
           command: |
