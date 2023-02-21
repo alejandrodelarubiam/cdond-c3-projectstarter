@@ -263,7 +263,9 @@ jobs:
             apt-get update
             apt-get install -y curl gnupg2
             curl -sL https://deb.nodesource.com/setup_14.x | bash -
-            apt-get install -y nodejs npm   
+            apt-get install -y nodejs
+            ln -s /usr/bin/nodejs /usr/local/bin/node
+            apt-get install -y npm  
       - run:
           name: Get backend url
           command: |
