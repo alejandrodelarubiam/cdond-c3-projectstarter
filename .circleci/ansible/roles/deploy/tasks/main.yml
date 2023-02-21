@@ -1,7 +1,7 @@
 - name: Extract artifact and start app
   become: true
   vars:
-    artifact_file: "./dist/artifact.tar.gz"
+    artifact_file: "backend/dist/artifact.tar.gz"
   tasks:
     - name: Extract artifact
       become: true
