@@ -258,6 +258,7 @@ jobs:
             
             # Install awscli
             apt-get install -y python3-pip
+            pip3 install awscli
 
             # Install Nodejs
             apt-get update -y
