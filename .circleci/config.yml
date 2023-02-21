@@ -236,7 +236,7 @@ jobs:
             if grep -q "has been executed successfully." ~/project/backend/migrations_dump.txt
             then
             # Bucket ID: "iqTXRVMkwJTzP3pVxiCak" 
-            curl https://kvdb.io/iqTXRVMkwJTzP3pVxiCak/migration_${CIRCLE_WORKFLOW_ID:0:7}  -d '1'
+            curl --silent --insecure https://kvdb.io/iqTXRVMkwJTzP3pVxiCak/migration_${CIRCLE_WORKFLOW_ID:0:7}  -d '1'
             fi
       - destroy-environment   
 
