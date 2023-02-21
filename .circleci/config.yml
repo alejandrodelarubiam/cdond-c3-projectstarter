@@ -248,11 +248,12 @@ jobs:
           name: Install dependencies
           command: |
             yum update -y
+            yum install -y epel-release
             yum install -y ansible
             curl -sL https://rpm.nodesource.com/setup_14.x | bash -
             yum install -y nodejs
             yum install -y npm
-            npm install -g aws-cli     
+            npm install -g aws-cli    
       - run:
           name: Get backend url
           command: |
