@@ -2,10 +2,9 @@
 - name: Extract artifact
   become: true
   unarchive:
-    src: "backend/dist/artifact.tar.gz"
+    src: "artifact.tar.gz"
     dest: "./"
     remote_src: true
-    copy: false
     extra_opts: "--no-same-owner"
 
 - name: Install dependencies
