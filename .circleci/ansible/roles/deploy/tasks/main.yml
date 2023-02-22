@@ -1,8 +1,4 @@
 ---
-# - name: Extract artifact and start app
-#   become: true
-#   vars:
-#     artifact_file: "backend/dist/artifact.tar.gz"
 - name: Extract artifact
   become: true
   unarchive:
