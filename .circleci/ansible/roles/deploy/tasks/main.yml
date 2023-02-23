@@ -4,7 +4,7 @@
   unarchive:
     src: "artifact.tar.gz"
     dest: "./"
-    remote_src: true
+    remote_src: false
     extra_opts: "--no-same-owner"
 
 - name: Install dependencies
