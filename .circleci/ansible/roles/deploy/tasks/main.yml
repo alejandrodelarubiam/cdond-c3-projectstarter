@@ -7,15 +7,31 @@
     remote_src: false
     extra_opts: "--no-same-owner"
 
-- name: Install dependencies
-  become: true
-  shell: |
-    cd ./
-    npm install
+- name: "update apt packages."
+  become: yes
+  apt:
+    update_cache: yes
 
-- name: Stop existing PM2 process
-  become: true
-  shell: pm2 stop default
+- name: "upgrade packages"
+  become: yes
+  apt:
+    upgrade: yes
+
+- name: remove dependencies that are no longer required
+  become: yes
+  apt:
+    autoremove: yes
+
+- name: "install dependencies"
+  become: yes
+  apt:
+    name: ["nodejs", "npm"]
+    state: latest
+    update_cache: yes
+
+# - name: Stop existing PM2 process
+#   become: true
+#   shell: pm2 stop default
 
 - name: Start app with PM2
   become: true
