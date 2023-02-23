@@ -273,7 +273,7 @@ jobs:
             INSTANCE_ID=$(aws ec2 describe-instances --filters "Name=tag:aws:cloudformation:stack-name,Values=udapeople-backend-${CIRCLE_WORKFLOW_ID:0:7}" --query "Reservations[].Instances[].InstanceId" --output text)
             BACKEND_IP=$(aws ec2 describe-instances --instance-ids $INSTANCE_ID --query 'Reservations[*].Instances[*].PublicIpAddress' --output text)
             export API_URL="http://${BACKEND_IP}:3030"
-            echo "${API_URL}"
+            echo "${API_URL}" > ~/api_url.txt
             echo API_URL="http://${BACKEND_IP}:3030" >> frontend/.env
             cat frontend/.env
       - run:
@@ -285,9 +285,9 @@ jobs:
             tar -czvf artifact-"${CIRCLE_WORKFLOW_ID:0:7}".tar.gz dist
             aws s3 cp dist s3://udapeople-${CIRCLE_WORKFLOW_ID:0:7} --recursive
       - persist_to_workspace:
-          root: frontend/
+          root: ~/
           paths:
-            - .env
+            - api_url.txt
       - destroy-environment
       - revert-migrations
    
@@ -350,7 +350,7 @@ jobs:
     steps:
       - checkout
       - attach_workspace:
-          at: frontend/     
+          at: ~/     
       - run:
           name: Install dependencies (curl, nodejs, npm, awscli)
           command: |
@@ -376,9 +376,9 @@ jobs:
       - run:
           name: Get backend url
           command: |
-            export API_URL=$(cat frontend/.env)
+            export API_URL=$(cat ~/api_url.txt)
             echo "${API_URL}/api/status"
-            URL_BACKEND="${API_URL}/api/status"
+            URL_BACKEND=$(echo "${API_URL}/api/status")
             echo ${URL_BACKEND}
             if curl -s ${URL_BACKEND} | grep "ok"
             then
