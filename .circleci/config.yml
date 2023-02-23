@@ -377,10 +377,7 @@ jobs:
           name: Get backend url
           command: |
             export API_URL=$(cat frontend/.env)
-            echo "${API_URL}"
-      - run:
-          name: Backend smoke test.
-          command: |
+            echo "${API_URL}/api/status"
             URL_BACKEND="${API_URL}/api/status"
             echo ${URL_BACKEND}
             if curl -s ${URL_BACKEND} | grep "ok"
@@ -388,7 +385,18 @@ jobs:
                 exit 0
             else
                 exit 1
-            fi
+            fi            
+      # - run:
+      #     name: Backend smoke test.
+      #     command: |
+      #       URL_BACKEND="${API_URL}/api/status"
+      #       echo ${URL_BACKEND}
+      #       if curl -s ${URL_BACKEND} | grep "ok"
+      #       then
+      #           exit 0
+      #       else
+      #           exit 1
+      #       fi
       - run:
           name: Frontend smoke test.
           command: |
