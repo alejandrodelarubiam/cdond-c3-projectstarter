@@ -24,15 +24,15 @@
   # Get the environment variables from CircleCI and add to the EC2 instance
     - name: Set environment variables on EC2 instance
       become: true
-      environment:
-        - TYPEORM_CONNECTION: "{{ lookup('env', 'TYPEORM_CONNECTION')}}"  
-        - TYPEORM_ENTITIES: "{{ lookup('env', 'TYPEORM_ENTITIES')}}"
-        - TYPEORM_HOST: "{{ lookup('env', 'TYPEORM_HOST')}}"
-        - TYPEORM_PORT: 5432
-        - TYPEORM_USERNAME: "{{ lookup('env', 'TYPEORM_USERNAME')}}"
-        - TYPEORM_PASSWORD: "{{ lookup('env', 'TYPEORM_PASSWORD')}}"
-        - TYPEORM_DATABASE: "{{ lookup('env', 'TYPEORM_DATABASE')}}"
-        - TYPEORM_MIGRATIONS: "{{ lookup('env', 'TYPEORM_MIGRATIONS')}}"
-        - TYPEORM_MIGRATIONS_DIR: "{{ lookup('env', 'TYPEORM_MIGRATIONS_DIR')}}"
+      shell: |
+        export TYPEORM_CONNECTION={{ lookup('env', 'TYPEORM_CONNECTION')}}
+        export TYPEORM_ENTITIES={{ lookup('env', 'TYPEORM_ENTITIES')}}
+        export TYPEORM_HOST={{ lookup('env', 'TYPEORM_HOST')}}
+        export TYPEORM_PORT=5432
+        export TYPEORM_USERNAME={{ lookup('env', 'TYPEORM_USERNAME')}}
+        export TYPEORM_PASSWORD={{ lookup('env', 'TYPEORM_PASSWORD')}}
+        export TYPEORM_DATABASE={{ lookup('env', 'TYPEORM_DATABASE')}}
+        export TYPEORM_MIGRATIONS={{ lookup('env', 'TYPEORM_MIGRATIONS')}}
+        export TYPEORM_MIGRATIONS_DIR={{ lookup('env', 'TYPEORM_MIGRATIONS_DIR')}}
   roles:
     - configure-server
