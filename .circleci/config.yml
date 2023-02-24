@@ -396,27 +396,58 @@ jobs:
             echo ${URL} 
             if curl -s ${URL} | grep "Welcome"
             then
-              exit 1
+              exit 0
             else
               exit 1
             fi
       - destroy-environment
       - revert-migrations
-#   cloudfront-update:
-#     docker:
-#       # Docker image here that supports AWS CLI
-#     steps:
-#       # Checkout code from git
-#       - run:
-#           name: Install dependencies
-#           command: |
-#             # your code here
-#       - run:
-#           name: Update cloudfront distribution
-#           command: |
-#             # your code here
-#       # Here's where you will add some code to rollback on failure  
+  cloudfront-update:
+    docker:
+        - image: python:3.9.16
+    steps:
+      - checkout
+      - run:
+          name: Install dependencies (curl, nodejs, npm, awscli)
+          command: |
+            # Install software-properties-common
+            apt-get update
+            apt-get install -y software-properties-common
 
+            # Install curl
+            apt-get update -y
+            apt-get install -y curl
+
+            # Install Nodejs
+            apt-get update -y
+            apt-get install -y nodejs
+
+            # Install Npm
+            apt-get update -y
+            apt-get install -y npm 
+
+            # Install awscli
+            apt-get install -y python3-pip
+            pip3 install awscli
+      - run:
+          name: Update cloudfront distribution
+          command: |
+            export OldWorkflowID=$(aws cloudformation \
+            list-exports --query "Exports[?Name==\`PipelineID\`].Value" \
+            --no-paginate --output text)
+            echo $OldWorkflowID >> ~/OldWorkflowID.txt
+            cat ~/OldWorkflowID.txt
+
+            aws cloudformation deploy \
+              --template-file .circleci/files/cloudfront.yml \
+              --stack-name "InitialStack-${OldWorkflowID}" \
+              --parameter-overrides WorkflowID="udapeople-${CIRCLE_WORKFLOW_ID:0:7}" \
+              --tags project=udapeople
+
+            echo OldWorkflowID: "${OldWorkflowID}"
+            echo Current Workflow Id: "${CIRCLE_WORKFLOW_ID:0:7}"       
+      - destroy-environment
+      - revert-migrations
 # cleanup:
 #     docker:
 #       # Docker image here
@@ -471,7 +502,7 @@ workflows:
           requires: [run-migrations]
       - smoke-test:
           requires: [deploy-backend, deploy-frontend]
-      # - cloudfront-update:
-      #     requires: [smoke-test]
+      - cloudfront-update:
+          requires: [smoke-test]
       # - cleanup:
       #     requires: [cloudfront-update]
