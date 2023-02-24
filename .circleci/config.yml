@@ -374,7 +374,7 @@ jobs:
             apt-get install -y python3-pip
             pip3 install awscli
       - run:
-          name: Get backend url
+          name: Get backend url and Backend smoke test.
           command: |
             export API_URL=$(cat ~/api_url.txt)
             echo "${API_URL}/api/status"
@@ -382,21 +382,10 @@ jobs:
             echo ${URL_BACKEND}
             if curl -s ${URL_BACKEND} | grep "ok"
             then
-                exit 0
+                exit 1
             else
                 exit 1
             fi            
-      # - run:
-      #     name: Backend smoke test.
-      #     command: |
-      #       URL_BACKEND="${API_URL}/api/status"
-      #       echo ${URL_BACKEND}
-      #       if curl -s ${URL_BACKEND} | grep "ok"
-      #       then
-      #           exit 0
-      #       else
-      #           exit 1
-      #       fi
       - run:
           name: Frontend smoke test.
           command: |
