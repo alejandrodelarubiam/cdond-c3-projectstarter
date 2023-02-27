@@ -457,42 +457,26 @@ jobs:
           name: Get old stack workflow id
           command: |
             # Fetch the stack names 
-            # I did it slightly different, listing all stacks, filtering by its name and comparing with the current version        
+            # I did it slightly different, listing all stacks, filtering by its parameters and comparing with the current version        
             export STACKS=($(aws cloudformation list-stacks --query "StackSummaries[*].StackName" \
             --stack-status-filter CREATE_COMPLETE UPDATE_COMPLETE --no-paginate --output text)) 
             echo Stack names: "${STACKS[@]}"
             for STACK_NAME in "${STACKS[@]}"; do
             WorkflowID=$(aws cloudformation describe-stacks --stack-name $STACK_NAME \
             --query 'Stacks[].Parameters[?ParameterKey==`WorkflowID`].ParameterValue' --output text)
-            if [[ "udapeople-${CIRCLE_WORKFLOW_ID:0:7}" != "$STACK_NAME" ]]
+            if [[ "${CIRCLE_WORKFLOW_ID:0:7}" != "$WorkflowID" ]]
             then
               echo "----------------Delete confirmed------------------------"
-              echo "Deleting ${WorkflowID}"
+              echo "Deleting udapeople-${WorkflowID}"
               echo "Current version is udapeople-${CIRCLE_WORKFLOW_ID:0:7}"
-              aws cloudformation delete-stack --stack-name "${WorkflowID}"
+              aws s3 rm "s3://udapeople-${WorkflowID}" --recursive
+              aws cloudformation delete-stack --stack-name "udapeople-backend-${WorkflowID}"
+              aws cloudformation delete-stack --stack-name "udapeople-frontend-${WorkflowID}"              
             else
               echo "----------------Cannot cleanup------------------------"
             fi
             done 
-
-      - run:
-          name: Remove old stacks and files
-          command: |
-            for STACK_NAME in "${STACKS[@]}"; do
-            WorkflowID=$(aws cloudformation describe-stacks --stack-name $STACK_NAME \
-            --query 'Stacks[].Parameters[?ParameterKey==`WorkflowID`].ParameterValue' --output text)
-            if [[ "udapeople-${CIRCLE_WORKFLOW_ID:0:7}" != "$STACK_NAME" ]]
-            then
-              echo "----------------Delete confirmed------------------------"
-              echo "Deleting udapeople-${WorkflowID}"
-              echo "Current is udapeople-${CIRCLE_WORKFLOW_ID:0:7}"
-              aws cloudformation delete-stack --stack-name "udapeople-${WorkflowID}"
-            else
-              echo "----------------Cannot cleanup------------------------"
-            fi
-            done
             
-
 workflows:
   default:
     jobs:
