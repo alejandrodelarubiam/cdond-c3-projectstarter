@@ -477,10 +477,12 @@ jobs:
             then
               echo "----------------Delete confirmed------------------------"
               echo "Deleting udapeople-${WorkflowID}"
+              echo "Current is udapeople-${CIRCLE_WORKFLOW_ID:0:7}"
               aws cloudformation delete-stack --stack-name "udapeople-${WorkflowID}"
             else
               echo "----------------Cannot cleanup------------------------"
             fi
+            done
             
 
 workflows:
