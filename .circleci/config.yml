@@ -471,17 +471,19 @@ jobs:
             then
               echo "----------------Delete confirmed------------------------"
               echo "Deleting udapeople-${WorkflowID}"
-              echo "Current version is udapeople-${CIRCLE_WORKFLOW_ID_FIXED}"
-              if aws s3 ls "s3://udapeople-${WorkflowID}" 2>&1 | grep -q 'NoSuchBucket'; then
-                echo "Bucket does not exist. Skipping deletion."
-              else
-                aws s3 rb "s3://udapeople-${WorkflowID}" --force
-              fi            
+              echo "Current version is udapeople-${CIRCLE_WORKFLOW_ID_FIXED}"            
               aws cloudformation delete-stack --stack-name "$STACK_NAME"
               aws cloudformation wait stack-delete-complete --stack-name "$STACK_NAME" 
+              #Ensuring s3 bucket is deleted only when passed backend stack
+              if "${STACK_NAME}" =~ "backend"
+              then
+                aws s3 rb "s3://udapeople-${WorkflowID}" --force
+              else
+                echo "S3 Bucket already deleted or deleted in following iteration"
+              fi
               #Query to check the deleted stacks  
               echo "The following stacks have been deleted successfully:"           
-              aws cloudformation list-stacks --query "StackSummaries[?starts_with(StackName, '$STACK_NAME}')].StackName" --stack-status-filter DELETE_COMPLETE --no-paginate --output text
+              aws cloudformation list-stacks --query "StackSummaries[?starts_with(StackName, '$STACK_NAME')].StackName" --stack-status-filter DELETE_COMPLETE --no-paginate --output text
             else
               echo "----------------Cannot cleanup, $WorkflowID is current version------------------------"
             fi
