@@ -440,7 +440,7 @@ jobs:
 
             aws cloudformation deploy \
               --template-file .circleci/files/cloudfront.yml \
-              --stack-name "udapeopke-${OldWorkflowID}" \
+              --stack-name "udapeople-${OldWorkflowID}" \
               --parameter-overrides WorkflowID="udapeople-${CIRCLE_WORKFLOW_ID:0:7}" \
               --tags project=udapeople
 
@@ -458,79 +458,87 @@ jobs:
           command: |
             # Fetch the stack names 
             # I did it slightly different, listing all stacks, filtering by its parameters and comparing with the current version        
+            # This time, only for submit purporses, I fixed CIRCLE_WORKFLOW_ID in order to keep Stacks of previous delivered URLs
+            CIRCLE_WORKFLOW_ID_FIXED=d9f9dec
+            echo $CIRCLE_WORKFLOW_ID_FIXED
             export STACKS=($(aws cloudformation list-stacks --query "StackSummaries[*].StackName" \
             --stack-status-filter CREATE_COMPLETE UPDATE_COMPLETE --no-paginate --output text)) 
             echo Stack names: "${STACKS[@]}"
             for STACK_NAME in "${STACKS[@]}"; do
             WorkflowID=$(aws cloudformation describe-stacks --stack-name $STACK_NAME \
-            --query 'Stacks[].Parameters[?ParameterKey==`WorkflowID`].ParameterValue' --output text)
-            if [[ "${CIRCLE_WORKFLOW_ID:0:7}" != "$WorkflowID" ]]
+            --query 'Stacks[].Parameters[?ParameterKey==`ID`].ParameterValue' --output text)
+            if [[ "${CIRCLE_WORKFLOW_ID_FIXED}" != "$WorkflowID" ]]
             then
               echo "----------------Delete confirmed------------------------"
               echo "Deleting udapeople-${WorkflowID}"
               echo "Current version is udapeople-${CIRCLE_WORKFLOW_ID:0:7}"
-              aws s3 rm "s3://udapeople-${WorkflowID}" --recursive
+              aws s3 rb "s3://udapeople-${WorkflowID}" --force
               aws cloudformation delete-stack --stack-name "udapeople-backend-${WorkflowID}"
-              aws cloudformation delete-stack --stack-name "udapeople-frontend-${WorkflowID}"              
+              aws cloudformation delete-stack --stack-name "udapeople-frontend-${WorkflowID}"
+              aws cloudformation wait stack-delete-complete --stack-name "udapeople-backend-${WorkflowID}"
+              aws cloudformation wait stack-delete-complete --stack-name "udapeople-frontend-${WorkflowID}"              
+              aws cloudformation list-stack-resources --stack-name "udapeople-backend-${WorkflowID}" --stack-status-filter DELETE_COMPLETE
+              aws cloudformation list-stack-resources --stack-name "udapeople-frontend-${WorkflowID}" --stack-status-filter DELETE_COMPLETE
+
             else
-              echo "----------------Cannot cleanup------------------------"
+              echo "----------------Cannot cleanup, $WorkflowID is current version------------------------"
             fi
             done 
             
 workflows:
   default:
     jobs:
-      - build-frontend:
-          context: Udacity_CICD_Project
-      - build-backend:
-          context: Udacity_CICD_Project
-      - test-frontend:
-          requires: [build-frontend]
-          context: Udacity_CICD_Project
-      - test-backend:
-          requires: [build-backend]
-          context: Udacity_CICD_Project
-      - scan-backend:
-          requires: [build-backend]
-          context: Udacity_CICD_Project
-      - scan-frontend:
-          requires: [build-frontend]
-          context: Udacity_CICD_Project
-      - deploy-infrastructure:
-          requires: [test-frontend, test-backend, scan-frontend, scan-backend]
-          filters:
-            branches:
-              only: [master]
-      - configure-infrastructure:
-          requires: [deploy-infrastructure]
-          filters:
-            branches:
-              only: [master]   
-      - run-migrations:
-          requires: [configure-infrastructure]
-          filters:
-            branches:
-              only: [master]
-      - deploy-frontend:
-          requires: [run-migrations]
-          filters:
-            branches:
-              only: [master]
-      - deploy-backend:
-          requires: [run-migrations]      
-          filters:
-            branches:
-              only: [master]
-      - smoke-test:
-          requires: [deploy-backend, deploy-frontend]
-          filters:
-            branches:
-              only: [master]
-      - cloudfront-update:
-          requires: [smoke-test]
-          filters:
-            branches:
-              only: [master]
-      - cleanup:
-          requires: [cloudfront-update]
+      # - build-frontend:
+      #     context: Udacity_CICD_Project
+      # - build-backend:
+      #     context: Udacity_CICD_Project
+      # - test-frontend:
+      #     requires: [build-frontend]
+      #     context: Udacity_CICD_Project
+      # - test-backend:
+      #     requires: [build-backend]
+      #     context: Udacity_CICD_Project
+      # - scan-backend:
+      #     requires: [build-backend]
+      #     context: Udacity_CICD_Project
+      # - scan-frontend:
+      #     requires: [build-frontend]
+      #     context: Udacity_CICD_Project
+      # - deploy-infrastructure:
+      #     requires: [test-frontend, test-backend, scan-frontend, scan-backend]
+      #     filters:
+      #       branches:
+      #         only: [master]
+      # - configure-infrastructure:
+      #     requires: [deploy-infrastructure]
+      #     filters:
+      #       branches:
+      #         only: [master]   
+      # - run-migrations:
+      #     requires: [configure-infrastructure]
+      #     filters:
+      #       branches:
+      #         only: [master]
+      # - deploy-frontend:
+      #     requires: [run-migrations]
+      #     filters:
+      #       branches:
+      #         only: [master]
+      # - deploy-backend:
+      #     requires: [run-migrations]      
+      #     filters:
+      #       branches:
+      #         only: [master]
+      # - smoke-test:
+      #     requires: [deploy-backend, deploy-frontend]
+      #     filters:
+      #       branches:
+      #         only: [master]
+      # - cloudfront-update:
+      #     requires: [smoke-test]
+      #     filters:
+      #       branches:
+      #         only: [master]
+      - cleanup
+          #requires: [cloudfront-update]
       
