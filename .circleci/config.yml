@@ -456,6 +456,7 @@ jobs:
       - run:
           name: Get old stack workflow id
           command: |
+            export TERM=dumb
             # Fetch the stack names 
             # I did it slightly different, listing all stacks, filtering by its parameters and comparing with the current version        
             # This time, only for submit purporses, I fixed CIRCLE_WORKFLOW_ID in order to keep Stacks of previous delivered URLs
@@ -475,7 +476,7 @@ jobs:
               aws cloudformation delete-stack --stack-name "$STACK_NAME"
               aws cloudformation wait stack-delete-complete --stack-name "$STACK_NAME" 
               #Ensuring s3 bucket is deleted only when passed backend stack
-              if "${STACK_NAME}" =~ "backend"
+              if [[ "${STACK_NAME}" =~ "backend" ]]
               then
                 aws s3 rb "s3://udapeople-${WorkflowID}" --force
               else
