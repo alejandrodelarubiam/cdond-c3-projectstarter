@@ -473,14 +473,11 @@ jobs:
               echo "Deleting udapeople-${WorkflowID}"
               echo "Current version is udapeople-${CIRCLE_WORKFLOW_ID:0:7}"
               aws s3 rb "s3://udapeople-${WorkflowID}" --force
-              aws cloudformation delete-stack --stack-name "udapeople-backend-${WorkflowID}"
-              aws cloudformation delete-stack --stack-name "udapeople-frontend-${WorkflowID}"
-              aws cloudformation wait stack-delete-complete --stack-name "udapeople-backend-${WorkflowID}"
-              aws cloudformation wait stack-delete-complete --stack-name "udapeople-frontend-${WorkflowID}" 
+              aws cloudformation delete-stack --stack-name "$STACK_NAME"
+              aws cloudformation wait stack-delete-complete --stack-name "STACK_NAME" 
               #Query to check the deleted stacks  
               echo "The following stacks have been deleted successfully:"           
-              aws cloudformation list-stacks --query "StackSummaries[?starts_with(StackName, 'udapeople-backend-${WorkflowID}')].StackName" --stack-status-filter DELETE_COMPLETE --no-paginate --output text
-              aws cloudformation list-stacks --query "StackSummaries[?starts_with(StackName, 'udapeople-frontend-${WorkflowID}')].StackName" --stack-status-filter DELETE_COMPLETE --no-paginate --output text
+              aws cloudformation list-stacks --query "StackSummaries[?starts_with(StackName, '$STACK_NAME}')].StackName" --stack-status-filter DELETE_COMPLETE --no-paginate --output text
             else
               echo "----------------Cannot cleanup, $WorkflowID is current version------------------------"
             fi
