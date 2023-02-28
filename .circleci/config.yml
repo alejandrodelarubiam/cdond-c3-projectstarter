@@ -476,10 +476,11 @@ jobs:
               aws cloudformation delete-stack --stack-name "udapeople-backend-${WorkflowID}"
               aws cloudformation delete-stack --stack-name "udapeople-frontend-${WorkflowID}"
               aws cloudformation wait stack-delete-complete --stack-name "udapeople-backend-${WorkflowID}"
-              aws cloudformation wait stack-delete-complete --stack-name "udapeople-frontend-${WorkflowID}"              
-              aws cloudformation list-stack-resources --stack-name "udapeople-backend-${WorkflowID}" --stack-status-filter DELETE_COMPLETE
-              aws cloudformation list-stack-resources --stack-name "udapeople-frontend-${WorkflowID}" --stack-status-filter DELETE_COMPLETE
-
+              aws cloudformation wait stack-delete-complete --stack-name "udapeople-frontend-${WorkflowID}" 
+              #Query to check the deleted stacks  
+              echo "The following stacks have been deleted successfully:"           
+              aws cloudformation list-stacks --query "StackSummaries[?starts_with(StackName, 'udapeople-backend-${WorkflowID}')].StackName" --stack-status-filter DELETE_COMPLETE --no-paginate --output text
+              aws cloudformation list-stacks --query "StackSummaries[?starts_with(StackName, 'udapeople-frontend-${WorkflowID}')].StackName" --stack-status-filter DELETE_COMPLETE --no-paginate --output text
             else
               echo "----------------Cannot cleanup, $WorkflowID is current version------------------------"
             fi
